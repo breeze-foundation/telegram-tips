@@ -1,8 +1,10 @@
 require('dotenv').config() 
 const {Telegraf, Markup } = require('telegraf');
 const mysql      = require('mysql');
+const axios = require('axios')
 const Db         = require('./db.js');
 const token      = process.env.TOKEN; 
+const node_server= process.env.SERVER;
 const bot        = new Telegraf(token);
 let db           = new Db();  
 let refreshTime = 5000;
@@ -36,6 +38,40 @@ bot.help(async (ctx) => {
         ctx.reply(`You need admin permissions to use this tool.`);
     }
 });
+bot.command('status',async (ctx) => {
+    
+    let username = ctx.message.chat.username;
+    let text     = ctx.message.text;
+    console.log(text);
+    if (admin.indexOf(username) != -1) {
+        axios.get(node_server+"/status").then(res => {
+            let status = res.data;
+            if (status.message == "No rains active at this moment." || status.message == "internal server error") {
+                ctx.reply(`${status.message}`);
+            }else {
+                let ranking_str = '';
+                if (status.data.ranking.length > 0) {
+                    ranking_str = 'Ranking:';
+                    for (let i = 0; i < status.data.ranking.length; i++) {
+                        const e = status.data.ranking[i];
+                        ranking_str += `(Author: ${e.author}, count: ${e.count})
+`;
+                    }
+                }
+                ctx.reply(`Amount to distribute: ${status.data.rain.amount} TMAC.
+Duration of the rain: ${status.data.rain.duration} hours.
+Start date: ${status.data.rain.start_date}
+End date: ${status.data.rain.end_date}
+
+${ranking_str}`);
+            }
+            
+        })
+        
+    }else{
+        ctx.reply(`You need admin permissions to use this tool.`);
+    }
+}); 
 bot.command('new',async (ctx) => {
     
     let username = ctx.message.chat.username;

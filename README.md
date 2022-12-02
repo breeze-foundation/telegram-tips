@@ -19,7 +19,10 @@ DB_NAME=breeze_rain
 DB_HOST=localhost 
 PAYING_ACCOUNT=breeze_account
 KEY=breeze_key
+SERVER=http://steemseven.xyz:3000
 ```
+
+Server is your nodeJS server using port 3000.
 
 4- Install dependencies doing ```npm i```
 

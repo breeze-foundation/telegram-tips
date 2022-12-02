@@ -2,8 +2,11 @@ require('dotenv').config()
 const BlockStreamer = require('./blockStreamer.js')
 const {Telegraf, Markup } = require('telegraf');
 const breej = require('breej')
-const mysql = require('mysql');
-const axios = require('axios')
+const mysql = require('mysql'); 
+const express = require("express");
+const bodyParser = require('body-parser');
+var cors = require('cors')
+const moment = require('moment')
 const token      = process.env.TOKEN; 
 const bot        = new Telegraf(token);
 const Db    = require('./db.js');
@@ -16,7 +19,11 @@ let paying_account = {
     key:process.env.KEY
 } 
 let blkStreamer = new BlockStreamer()
-
+const app = express();
+const PORT = 3000;
+app.use(cors())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 function isInArray(name, arr){
     for (let i = 0; i < arr.length; i++) {
@@ -93,6 +100,10 @@ function updater() {
                 let hours = rains[0].hours; 
                 console.log('New rain detected, handling it. ', total_distribution, ' TMAC will be distributed in ', hours, ' hours.');
                 active=true;
+                let now = moment()
+                let end = moment().add(hours, 'hours') 
+                rains[0].start_date = now;
+                rains[0].end_date   = end;
                 clearInterval(handler.updater);
                 //Starting rain, this method receive 2 params, the callback and the stop time in seconds
                 blkStreamer.streamBlocks((newBlock) => { 
@@ -148,3 +159,23 @@ function main() {
     updater(); 
 }
 main()
+app.get('/', function (req, res) {
+    let json = {status:'ok', message:"Use /status to know the current rain."}
+    res.send(json);
+    
+});
+app.get('/status', function (req, res) {
+    let json = {}
+    try { 
+        if (rains.length>0) {
+            json = {status:'ok', message:"There is one rain happening", data:{rain:{amount:rains[0].amount,duration:rains[0].hours, start_date:rains[0].start_date, end_date:rains[0].end_date}, ranking:posts}}
+        }else { json = {status:'ok', message:"No rains active at this moment."} }
+    } catch (error) {
+        json = {status:'fail', message:"internal server error", error:error}
+    }
+    res.send(json); 
+});
+
+app.listen(PORT, () => {
+    console.log('Server initialized.');
+});
