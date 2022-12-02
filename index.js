@@ -100,8 +100,8 @@ function updater() {
                 let hours = rains[0].hours; 
                 console.log('New rain detected, handling it. ', total_distribution, ' TMAC will be distributed in ', hours, ' hours.');
                 active=true;
-                let now = moment()
-                let end = moment().add(hours, 'hours') 
+                let now = moment().utc();
+                let end = moment().utc().add(hours, 'hours') 
                 rains[0].start_date = now;
                 rains[0].end_date   = end;
                 clearInterval(handler.updater);
