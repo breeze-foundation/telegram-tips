@@ -1,6 +1,6 @@
 require('dotenv').config() 
 const {Telegraf, Markup } = require('telegraf');
-const mysql      = require('mysql');
+const mysql      = require('mysql2');
 const axios = require('axios')
 const Db         = require('./db.js');
 const token      = process.env.TOKEN; 
