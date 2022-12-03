@@ -1,6 +1,5 @@
 require('dotenv').config()
 const mongoose = require("mongoose");
-const { UserModel } = require("./user");
 const { SuspendedUserModel } = require("./Suspended");
 
 const connectDatabase = async () => {
@@ -12,16 +11,6 @@ const connectDatabase = async () => {
   } catch (err) {
     console.error("Couldn't connect to MongoDB instance!", err);
     process.exit(1);
-  }
-}
-
-const fetchUser = async (username) => {
-  try {
-    const user = await UserModel.findOne({ username });
-    return user;
-  } catch (err) {
-    console.error(err);
-    return false;
   }
 }
 
@@ -37,6 +26,5 @@ const fetchSuspended = async (username) => {
 
 module.exports = {
   connectDatabase,
-  fetchUser,
   fetchSuspended
 };
