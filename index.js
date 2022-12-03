@@ -2,7 +2,7 @@ require('dotenv').config()
 const BlockStreamer = require('./blockStreamer.js')
 const {Telegraf, Markup } = require('telegraf');
 const breej = require('breej')
-const mysql = require('mysql'); 
+const mysql = require('mysql2'); 
 const express = require("express");
 const bodyParser = require('body-parser');
 var cors = require('cors')
