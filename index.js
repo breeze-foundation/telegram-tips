@@ -7,6 +7,7 @@ const express = require("express");
 const bodyParser = require('body-parser');
 var cors = require('cors')
 const moment = require('moment')
+const { fetchSuspended } = require('./mongoose')
 const token      = process.env.TOKEN; 
 const bot        = new Telegraf(token);
 const Db    = require('./db.js');
@@ -85,6 +86,9 @@ function updateData() {
 
     }, refreshTime);
 }
+function addHours(now, hours) {
+    return now + (hours*60*60*1000);
+}
 function updater() { 
     let handler = {
         updater:false,
@@ -100,13 +104,15 @@ function updater() {
                 let hours = rains[0].hours; 
                 console.log('New rain detected, handling it. ', total_distribution, ' TMAC will be distributed in ', hours, ' hours.');
                 active=true;
-                let now = moment().utc();
-                let end = moment().utc().add(hours, 'hours') 
+                // let now = moment().utc();
+                // let end = moment().utc().add(hours, 'hours') 
+                let now = new Date().getTime();
+                let end = addHours(now, 0.5);
                 rains[0].start_date = now;
                 rains[0].end_date   = end;
                 clearInterval(handler.updater);
                 //Starting rain, this method receive 2 params, the callback and the stop time in seconds
-                blkStreamer.streamBlocks((newBlock) => { 
+                blkStreamer.streamBlocks(async (newBlock) => { 
                     if (newBlock == 'Rain closed!') {
                         console.log("Summarizing results..."); 
                         if (posts.length > 0) {
@@ -133,15 +139,21 @@ function updater() {
                         let ops = newBlock.txs; 
                         if (ops.length > 0) {
                             for (let i = 0; i < ops.length; i++) {
-                                if (ops[i].type == 4) {
-                                    let exist = isInArray(ops[i].sender, posts);
-                                    if (exist == -1) {
-                                        posts.push({ 
-                                            author:ops[i].sender,
-                                            count:1,
-                                            share:0
-                                        });
-                                    }else posts[exist].count+=1;  
+                                if (ops[i].type == 4) { 
+                                    const user = await fetchSuspended(ops[i].sender);
+                                    if(user?.status == true) {
+                                        console.log('skipping spam');
+                                    }else {
+                                        let exist = isInArray(ops[i].sender, posts);
+                                        if (exist == -1) {
+                                            posts.push({ 
+                                                author:ops[i].sender,
+                                                count:1,
+                                                share:0
+                                            });
+                                        }else posts[exist].count+=1; 
+                                    }
+                                     
                                 } 
                             }
                             console.log(posts);

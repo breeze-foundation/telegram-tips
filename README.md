@@ -17,6 +17,7 @@ DB_USER=root
 DB_PASSWORD=
 DB_NAME=breeze_rain
 DB_HOST=localhost 
+DATABASE_URI=moongose_database
 PAYING_ACCOUNT=breeze_account
 KEY=breeze_key
 SERVER=http://steemseven.xyz:3000
