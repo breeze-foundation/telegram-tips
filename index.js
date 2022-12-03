@@ -137,9 +137,6 @@ function updater() {
                         console.log('Cant query api');
                     }else {
                         let ops = newBlock.txs; 
-                        console.log(`DUMP OF OPS BEGINS`);
-                        console.log(ops[0]);
-                        console.log(`DUMP OF OPS ENDS`);
                         if (ops.length > 0) {
                             for (let i = 0; i < ops.length; i++) {
                                 if (ops[i].type == 4) { 
