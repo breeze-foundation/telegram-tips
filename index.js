@@ -107,7 +107,7 @@ function updater() {
                 // let now = moment().utc();
                 // let end = moment().utc().add(hours, 'hours') 
                 let now = new Date().getTime();
-                let end = addHours(now, 0.5);
+                let end = addHours(now, hours);
                 rains[0].start_date = now;
                 rains[0].end_date   = end;
                 clearInterval(handler.updater);
