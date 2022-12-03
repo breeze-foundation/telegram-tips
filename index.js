@@ -169,7 +169,7 @@ app.get('/status', function (req, res) {
     try { 
         if (rains.length>0) {
             json = {status:'ok', message:"There is one rain happening", data:{rain:{amount:rains[0].amount,duration:rains[0].hours, start_date:rains[0].start_date, end_date:rains[0].end_date}, ranking:posts}}
-        }else { json = {status:'ok', message:"No rains active at this moment."} }
+        }else { json = {status:'ok', message:"No rains active at this moment.", rain:'false'} }
     } catch (error) {
         json = {status:'fail', message:"internal server error", error:error}
     }
