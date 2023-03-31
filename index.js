@@ -117,7 +117,7 @@ function updater() {
                         console.log("Summarizing results..."); 
                         if (posts.length > 0) {
                             let total = getTotalPosts(posts);
-                            
+                            console.log(total)
                             for (let i = 0; i < posts.length; i++) {
                                 posts[i].share = (posts[i].count*100/total).toFixed(2);
                                 let amount = total_distribution*(posts[i].share/100);
