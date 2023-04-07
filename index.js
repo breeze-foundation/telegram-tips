@@ -117,7 +117,7 @@ function updater() {
                         console.log("Summarizing results..."); 
                         if (posts.length > 0) {
                             let total = getTotalPosts(posts);
-                            console.log(total)
+                            
                             for (let i = 0; i < posts.length; i++) {
                                 posts[i].share = (posts[i].count*100/total).toFixed(2);
                                 let amount = total_distribution*(posts[i].share/100);
@@ -140,14 +140,20 @@ function updater() {
                         if (ops.length > 0) {
                             for (let i = 0; i < ops.length; i++) {
                                 if (ops[i].type == 4) { 
-                                    let exist = isInArray(ops[i].sender, posts);
+                                    const user = await fetchSuspended(ops[i].sender);
+                                    if(user?.status == true) {
+                                        console.log('skipping spam');
+                                    }else {
+                                        let exist = isInArray(ops[i].sender, posts);
                                         if (exist == -1) {
                                             posts.push({ 
                                                 author:ops[i].sender,
                                                 count:1,
                                                 share:0
                                             });
-                                        }else posts[exist].count+=1;  
+                                        }else posts[exist].count+=1; 
+                                    }
+                                     
                                 } 
                             }
                             console.log(posts);
